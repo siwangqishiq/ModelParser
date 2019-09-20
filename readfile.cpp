@@ -53,6 +53,14 @@ private:
 				
 		}//end for each
 
+		size_t dimension = contents.size();
+		std::cout << dimension << std::endl;
+		switch(contents[0]){
+			case "v"://顶点
+			std::cout << contents[1] << " " << contents[2] << "  " << contents[3] << std::endl;
+
+			break;
+		}//end switch
 	}
 
 };
@@ -60,15 +68,8 @@ private:
 
 int main(int argc , char *argv[]){
 	ParseObj parser;
-	parser.debug = true;
 	parser.parse(std::string("01Alocasia_obj.obj"));
 
-	std::string testline = "abc   年后 世界的 ";
-	std::cout << testline << std::endl;
-
-	std::string l = trim(testline);
-	std::cout << l << std::endl;
-	std::cout << l.at(1) << std::endl;
 	return 0;
 }
 
