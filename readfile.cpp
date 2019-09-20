@@ -13,6 +13,34 @@ std::string& trim(std::string &s, std::string suffix = " "){
 	return s;
 }
 
+struct vec3{
+	float x,y,z;
+}
+
+struct vec2{
+	float x,y;
+}
+
+/**
+* 从模型中读取的数据存放处
+*/
+class ModelData{
+public:
+	long mVertexCount;
+	float *pVertexBuf;
+	
+	ModelData(long vCount) : mVertexCount(vCount){
+	}
+	
+	~ModelData() {
+		if(pVertexBuf != nullptr){
+			delete pVertexBuf;
+		}
+		
+		std::cout << "free Modeldata" << std::endl;
+	}
+};
+
 class ParseObj{
 public:
 	bool debug = false;
@@ -20,17 +48,41 @@ public:
 		std::ifstream infile(filePath);
 		
 		if(infile.is_open()){
+			prepareData();
 			std::string line;
 			while(std::getline(infile , line)){
 				//std::cout << "read file line : " << line << std::endl;
 				readFileLine(line);
 			}
+			
+			std::cout << "vertexCount : " << vertexCount << std::endl;
+			std::cout << "normalCount : " << normalCount << std::endl;
 		}
 
 		infile.close();
+		return 0;
 	}
+	
+	ModelData *mModelData = nullptr;
+	
 private:
+	long vertexCount; //顶点数量
+	long normalCount; //法线坐标数量
+	
+	void prepareData(){
+		vertexCount = 0;
+		normalCount = 0;
+		
+		if(mModelData != nullptr){
+			delete mModelData;
+		}	
+		
+	}
+	
 	void readFileLine(std::string &line){
+		if(line.empty())
+			return;
+		
 		std::string content = trim(line , "\t");
 		
 		if(content[0] == '#'){ //此行为注释
@@ -49,18 +101,40 @@ private:
 		}//end while
 		//std::cout << std::endl;
 
-		for(std::string &c : contents){
-				
-		}//end for each
 
 		size_t dimension = contents.size();
-		std::cout << dimension << std::endl;
-		switch(contents[0]){
-			case "v"://顶点
-			std::cout << contents[1] << " " << contents[2] << "  " << contents[3] << std::endl;
-
-			break;
-		}//end switch
+		//std::cout << dimension << std::endl;
+				
+		//std::cout << contents[0] << std::endl;
+		std::string type = contents[0];
+		
+		if(type == "v"){ //顶点
+			float x = std::stof(contents[1]);
+			float y = std::stof(contents[2]);
+			float z = std::stof(contents[3]);
+			
+			vertexCount += 1;
+			//std::cout << x << " " << y << "  " << z << std::endl;
+		}else if(type == "vn") {//法向量
+			float nx = std::stof(contents[1]);
+			float ny = std::stof(contents[2]);
+			float nz = std::stof(contents[3]);
+			normalCount += 1;
+			//float len = nx * nx + ny * ny + nz * nz;
+			//std::cout << len << std::endl;
+			//std::cout << nx << " " << ny << "  " << nz << std::endl;
+		}else if(type == "vt") {//纹理坐标
+			float u = std::stof(contents[1]);
+			float v = std::stof(contents[2]);
+			//std::cout << u << " " << v << "  " << std::endl;
+		}else if(type == "f") {//面
+			
+		}
+		
+	}
+	
+	void readFaceData() {
+		
 	}
 
 };
@@ -68,8 +142,9 @@ private:
 
 int main(int argc , char *argv[]){
 	ParseObj parser;
+	//parser.debug = true;
 	parser.parse(std::string("01Alocasia_obj.obj"));
-
+	std::cout << "***********************************ended!********************************" << std::endl;
 	return 0;
 }
 
