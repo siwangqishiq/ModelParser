@@ -13,13 +13,14 @@ std::string& trim(std::string &s, std::string suffix = " "){
 	return s;
 }
 
-struct vec3{
-	float x,y,z;
-}
-
 struct vec2{
 	float x,y;
-}
+};
+
+struct vec3{
+	float x,y,z;
+};
+
 
 /**
 * 从模型中读取的数据存放处
@@ -80,11 +81,14 @@ private:
 	}
 	
 	void readFileLine(std::string &line){
-		if(line.empty())
+		if(line==" " || line.empty())
 			return;
-		
-		std::string content = trim(line , "\t");
-		
+
+		std::string content = trim(line);
+		if(content.empty())
+			return;
+
+
 		if(content[0] == '#'){ //此行为注释
 			return; 
 		}
@@ -104,7 +108,9 @@ private:
 
 		size_t dimension = contents.size();
 		//std::cout << dimension << std::endl;
-				
+		
+		if(dimension <= 0)
+			return;		
 		//std::cout << contents[0] << std::endl;
 		std::string type = contents[0];
 		
